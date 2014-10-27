@@ -2,24 +2,16 @@
 
 var React = require('react');
 var Tweet = require('./Tweet.react.js');
+var component = require('omniscient');
 
-module.exports = Tweets = React.createClass({
+module.exports = component('Tweets', function(cursor){
+  // Build list items of single tweet components using map
+  var content = cursor.map(function(tweet, key){
+    return Tweet(tweet.get('twid'), tweet);
+  }).toArray();
 
-  // Render our tweets
-  render: function(){
-
-    // Build list items of single tweet components using map
-    var content = this.props.tweets.map(function(tweet){
-      return (
-        <Tweet key={tweet._id} tweet={tweet} />
-      )
-    });
-
-    // Return ul filled with our mapped tweets
-    return (
-      <ul className="tweets">{content}</ul>
-    )
-
-  }
-
-}); 
+  // Return ul filled with our mapped tweets
+  return (
+    <ul className="tweets">{content}</ul>
+  )
+});

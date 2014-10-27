@@ -2,6 +2,11 @@
 
 Code repository for the tutorial by @kenwheeler: [Build A Real-Time Twitter Stream with Node and React.js](http://scotch.io/tutorials/javascript/build-a-real-time-twitter-stream-with-node-and-react-js)
 
+
+This is a fork changed to use [Omniscient.js](https://github.com/omniscientjs/omniscient):
+> A library providing an abstraction for React components that allows for fast top-down rendering embracing immutable data. Using cursors into immutable data structures, components can easily swap their own piece of data inside the larger immutable data structure. As data is immutable, re-rendering can be fast.
+
+
 ## Requirements
 
 - node and npm

@@ -1,21 +1,19 @@
 /** @jsx React.DOM */
 
 var React = require('react');
+var component = require('omniscient');
 
-module.exports = Tweet = React.createClass({
-  render: function(){
-    var tweet = this.props.tweet;
-    return (
-      <li className={"tweet" + (tweet.active ? ' active' : '')}>
-        <img src={tweet.avatar} className="avatar"/>
-        <blockquote>
-          <cite>
-            <a href={"http://www.twitter.com/" + tweet.screenname}>{tweet.author}</a> 
-            <span className="screen-name">@{tweet.screenname}</span> 
-          </cite>
-          <span className="content">{tweet.body}</span>
-        </blockquote>
-      </li>
-    )
-  }
+module.exports = component('Tweet', function(cursor){
+  return (
+    <li className={"tweet" + (cursor.get('active') ? ' active' : '')}>
+      <img src={cursor.get('avatar')} className="avatar"/>
+      <blockquote>
+        <cite>
+          <a href={"http://www.twitter.com/" + cursor.get('screenname') }>{cursor.get('author')}</a>
+          <span className="screen-name">@{cursor.get('screenname')}</span>
+        </cite>
+        <span className="content">{cursor.get('body')}</span>
+      </blockquote>
+    </li>
+  )
 });

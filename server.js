@@ -44,5 +44,6 @@ var io = require('socket.io').listen(server);
 
 // Set a stream listener for tweets matching tracking keywords
 twit.stream('statuses/filter',{ track: 'javascript'}, function(stream){
+  stream.on('error', console.log.bind(console));
   streamHandler(stream,io);
 });

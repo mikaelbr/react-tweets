@@ -1,13 +1,12 @@
 /** @jsx React.DOM */
 
 var React = require('react');
+var component = require('omniscient');
 
-module.exports = Loader = React.createClass({
-  render: function(){
-    return (
-      <div className={"loader " + (this.props.paging ? "active" : "")}>
-        <img src="svg/loader.svg" />
-      </div>
-    )
-  }
+module.exports = component(function(cursor){
+  return (
+    <div className={"loader " + (cursor.deref() ? "active" : "")}>
+      <img src="svg/loader.svg" />
+    </div>
+  )
 });
