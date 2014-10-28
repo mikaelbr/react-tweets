@@ -10,6 +10,15 @@ var EventEmitter = require('events').EventEmitter;
 var Immutable = require('immutable');
 var events = new EventEmitter();
 
+
+var swapCursorValueMixin = {
+  swapProps: function (value) {
+    return this.props.cursor.update(function (previous) {
+      return previous.merge(value);
+    });
+  }
+};
+
 // Export the TweetsApp component
 var mixins = {
   // Method to get JSON from server by page
@@ -22,14 +31,8 @@ var mixins = {
       if (request.status >= 200 && request.status < 400){
         // Load our next page
         self.loadPagedTweets(JSON.parse(request.responseText));
-
       } else {
-        cursor.update(function (previous) {
-          return previous.merge({
-            paging: false,
-            done: true
-          });
-        });
+        self.swapProps({ paging: false, done: true });
       }
     };
 
@@ -40,19 +43,13 @@ var mixins = {
   // Method to load tweets fetched from the server
   loadPagedTweets: function  (tweets) {
     if(!tweets.length) {
-      return this.props.cursor.update(function (previous) {
-        return previous.merge({
-          paging: false,
-          done: true
-        });
-      });
+      this.swapProps({ paging: false, done: true });
     }
 
-    this.props.cursor.update(function(previous) {
-      return previous.merge({
-        tweets: previous.get('tweets').concat(Immutable.fromJS(tweets)).toVector(),
-        paging: false
-      });
+    var previous = this.props.cursor.deref();
+    this.swapProps({
+      tweets: previous.get('tweets').concat(Immutable.fromJS(tweets)).toVector(),
+      paging: false
     });
   },
 
@@ -67,12 +64,9 @@ var mixins = {
     // If scrolled enough, not currently paging and not complete...
     if(scrolled && !cursor.get('paging') && !cursor.get('done')) {
 
-      // immutable cursors, re-set
-      cursor = cursor.update(function (previous) {
-        return previous.merge({
-          paging: true,
-          page: previous.get('page') + 1
-        });
+      cursor = this.swapProps({
+        paging: true,
+        page: cursor.get('page') + 1
       });
 
       // Get the next page of tweets from the server
@@ -108,17 +102,16 @@ var mixins = {
   },
 
   addTweet: function (tweet) {
-    this.props.cursor.update(function (previous) {
-      return previous.merge({
-        tweets: previous.get('tweets').unshift(Immutable.Map(tweet)).toVector(),
-        count: previous.get('count') + 1,
-        skip: previous.get('skip') + 1
-      });
+    var previous = this.props.cursor.deref();
+    this.swapProps({
+      tweets: previous.get('tweets').unshift(Immutable.Map(tweet)).toVector(),
+      count: previous.get('count') + 1,
+      skip: previous.get('skip') + 1
     });
   }
 };
 
-module.exports = component('TweetsApp', mixins, function (cursor) {
+module.exports = component('TweetsApp', [swapCursorValueMixin, mixins], function (cursor) {
   return (
     <div className="tweets-app">
       {Tweets(cursor.cursor('tweets'))}
